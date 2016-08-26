@@ -138,6 +138,14 @@ extension=redis.so
 
 7、重启验证
 
+
+#############去掉保护模式，允许访问########
+#bind 127.0.0.1
+protected-mode no
+
+
+
+
 资料
 http://www.cnblogs.com/GaZeon/p/5422078.html
 http://blog.csdn.net/c571121319/article/details/50931309
