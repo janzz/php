@@ -1,0 +1,35 @@
+
+一、读取文件配置
+例：params.php文件添加配置
+
+<?php
+return ['adminEmail' => 'admin@example.com',];
+
+echo Yii::$app->params['adminEmail'];
+
+二、安装curl扩展
+1、https://github.com/
+2、search yii-httpclient
+3、install php composer.phar require --prefer-dist yiisoft/yii2-httpclient or "yiisoft/yii2-httpclient": "~2.0.0"
+
+正解：composer require --prefer-dist yiisoft/yii2-httpclient
+
+使用：
+1、添加配置文件
+common\config\main-local.php
+'curl' => [ 'class' => 'yii\httpclient\Client'],
+2、使用*****记得引入命名空间
+ $response = Yii::$app->curl->createRequest()
+            ->setMethod('get')
+            ->setUrl($url)
+            ->setData(['data'=>$data])
+            ->send();
+        if ($response->isOk) {
+            $res = json_decode($response->content);
+            return $res;
+        } else {
+            return "fail";
+        }
+
+
+二、安装redis扩展
