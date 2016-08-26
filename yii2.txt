@@ -142,3 +142,29 @@ extension=redis.so
 http://www.cnblogs.com/GaZeon/p/5422078.html
 http://blog.csdn.net/c571121319/article/details/50931309
 http://www.tuicool.com/articles/q6v67rq
+
+
+
+三 yii安装redis
+二、安装curl扩展
+1、https://github.com/
+2、search yii-redis
+3、install php composer.phar require --prefer-dist yiisoft/yii2-redis or "yiisoft/yii2-redis": "~2.0.0"
+
+正解：composer require --prefer-dist yiisoft/yii2-redis
+
+
+return [
+    //....
+    'components' => [
+        'redis' => [
+            'class' => 'yii\redis\Connection',
+            'hostname' => 'localhost',
+            'port' => 6379,
+            'database' => 0,
+        ],
+    ]
+];
+
+
+使用：$response = Yii::$app->redis->get();
