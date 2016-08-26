@@ -1,0 +1,15 @@
+windows下配置redis
+
+http://pecl.php.net/package/redis
+
+dll文件下载解压.
+将 php_redis.dll 复制到 php安装目录/ext
+在 php.ini 文件中添加 extension=php_redis.dll
+
+windows下配置MQ
+http://pecl.php.net/package/amqp
+dll文件下载解压.
+
+将 php_ampq.dll 复制到 php安装目录/ext
+将 rabbitmq.1.dll 复制到 ext 的父目录中
+在 php.ini 文件中添加 extension=php_amqp.dll

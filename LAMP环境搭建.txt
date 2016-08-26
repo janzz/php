@@ -1,0 +1,149 @@
+                        Centos6.5 LAMP环境搭建 yum安装
+
+一、参考资料
+http://www.centoscn.com/CentosServer/www/2015/0829/6079.html
+
+自动获取ip
+vi /etc/sysconfig/network-scripts/ifcfg-eth0
+
+将 ONBOOT="no" 改为 ONBOOT="yes"
+
+保存后： service network restart
+
+查看IP： ifconfig
+1、	准备工作
+1)、查看SELinux状态：
+1、/usr/sbin/sestatus -v      ##如果SELinux status参数为enabled即为开启状态
+SELinux status:                 enabled
+2）、getenforce                 ##也可以用这个命令检查
+关闭SELinux：
+3）、临时关闭（不用重启机器）：
+setenforce 0                  ##设置SELinux 成为permissive模式
+                              ##setenforce 1 设置SELinux 成为enforcing模式
+4）、修改配置文件需要重启机器：
+修改/etc/selinux/config 文件
+将SELINUX=enforcing改为SELINUX=disabled
+重启机器即可
+/etc/init.d/iptables restart 立即生效
+
+2、防火墙开放一些端口
+service iptables stop 先关闭防火墙
+vim /etc/sysconfig/iptables 修改文件
+
+*filter
+:INPUT ACCEPT [472:28320]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [486:19896]
+-A INPUT -i lo -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 3306 -j ACCEPT
+-A INPUT -p icmp -m icmp --icmp-type 8 -j ACCEPT
+-A INPUT -m state --state ESTABLISHED -j ACCEPT
+COMMIT
+
+service iptables start  开启防火墙
+
+
+2、安装mysql
+# yum install mysql mysql-server
+一路y 最后出现Complete 安装成功
+
+开启mysql服务
+# service mysqld start
+初始化mysql，设置密码
+# mysql_secure_installation
+一路y 设置root密码
+重启mysql
+# service mysqld restart
+
+连接mysql
+mysql -uroot -p123456
+退出
+quit
+设置MySQL开机自动启动，levels 35 表示在命令行模式和X Window模式下自动启动
+# chkconfig --level 35 mysqld on
+
+
+3、安装Apache
+# yum install httpd
+
+设置Apache开机自启动，并启动Apache
+# chkconfig --level 35 httpd on
+# /etc/init.d/httpd start
+Starting httpd: httpd: Could not reliably determine the server's fully qualified domain name, using localhost.localdomain for ServerName
+报这个错需要
+vi /etc/httpd/conf/httpd.conf   加入一句  ServerName  localhost:80或者127.0.0.1:80
+
+CentOS中Apache的默认根目录在 /var/www/html  配置文件在 /etc/httpd/conf/httpd.conf  其他配置存储在 /etc/httpd/conf.d
+
+4、安装php
+# yum install php
+安装完成后需要重新启动一下 Apache
+# service httpd restart
+为了测试，我们在Apache的默认根目录下创建一个php页面
+# vim /var/www/html/info.php
+<?php
+phpinfo();
+?>
+
+5、关联PHP和Mysql
+# yum search php
+# yum install php-mysql php-gd php-imap php-ldap php-odbc php-pear php-xml php-xmlrpc
+安装完成后重启
+# service httpd restart
+
+
+
+
+
+
+ 1. 查看linux的内核版本，系统信息，常用的有三种办法：
+
+    uname -a；   more /etc/issue;    cat /proc/version;
+2. 查看apache的版本信息，如果是通过yum，或者是rpm安装的，可以使用rpm -qa |gerp httpd 来查看；还可以通过httpd -v来查询；当然，安装好apache后，可以直接elink回环查看apache的信息。
+
+3.查看php的版本信息，如果是通过yum，或者是rpm包安装的，可以使用rpm -qa |grep php来查看；同样，也可以使用php -v来查看php的版本信息；
+
+4. 查看mysql的版本信息，如果是通过yum安装的，或者是rpm包安装的，可以使用rpm -qa |grep mysql 来查看；也可以使用mysql -v 或者是--help|grep Distrib来查看；
+也可以进入mysql，然后通过命令select version（）；来查看；或者是status；命令查看。
+
+
+
+
+
+
+查看端口
+netstat -anpl | grep           9000
+
+查看开机启动项
+chkconfig --list
+
+查看运行级别
+who -r
+
+加到开机启动
+chkconfig --add php-fpm
+
+
+开机启动
+chkconfig php-fpm on
+
+
+环境变量
+/etc/profile
+
+
+
+
+启动php
+/etc/init.d/php-fpm start
+
+启动nginx
+/etc/init.d/nginx reload    这样启动会检查是否有语法错误，若有会不启动，线上环境比较安全，比较不容易宕机
+
+
+service nginx restart   如果有语法错误会起不来
+
+更改权限
+chown www. crm/ -R

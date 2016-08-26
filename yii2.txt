@@ -33,3 +33,112 @@ common\config\main-local.php
 
 
 二、安装redis扩展
+
+1、linux安装redis
+1）下载  /usr/local/src/  wget http://download.redis.io/releases/redis-3.0.7.tar.gz
+
+
+2)解压安装  tar xzf redis-3.0.7.tar.gz
+cd redis-3.0.7
+make
+
+开启redis前台服务测试：src/redis-server
+
+
+显示这个小盒子，前台服务即为成功开启，占用端口6379：
+复制代码
+
+                _._                                                  
+           _.-``__ ''-._                                             
+      _.-``    `.  `_.  ''-._           Redis 3.0.7 (00000000/0) 64 bit
+  .-`` .-```.  ```\/    _.,_ ''-._                                   
+ (    '      ,       .-`  | `,    )     Running in standalone mode
+ |`-._`-...-` __...-.``-._|'` _.-'|     Port: 6379
+ |    `-._   `._    /     _.-'    |     PID: 23909
+  `-._    `-._  `-./  _.-'    _.-'                                   
+ |`-._`-._    `-.__.-'    _.-'_.-'|                                  
+ |    `-._`-._        _.-'_.-'    |           http://redis.io        
+  `-._    `-._`-.__.-'_.-'    _.-'                                   
+ |`-._`-._    `-.__.-'    _.-'_.-'|                                  
+ |    `-._`-._        _.-'_.-'    |                                  
+  `-._    `-._`-.__.-'_.-'    _.-'                                   
+      `-._    `-.__.-'    _.-'                                       
+          `-._        _.-'                                           
+              `-.__.-'                                               
+
+
+按Ctrl+C退出redis前台服务。
+
+
+3）配置redis使用环境：
+
+现在，我们新建目录 /usr/local/redis ,把./redis.conf,src/redis-server,src/redis-cli 三个文件复制到该目录下
+
+
+mkdir /usr/local/redis
+cp redis.conf src/redis-server src/redis-cli /usr/local/redis/
+cd /usr/local/redis
+
+
+这三个文件：
+
+redis.conf redis配置文件
+
+redis-server redis服务端
+
+redis-cli redis客户端
+
+vi redis.conf修改配置，使redis服务在后台运行:
+
+#redis.conf#
+daemonize yes
+
+
+保存退出，./redis-server redis.conf 开启redis后台服务。
+
+
+
+如果你修改redis.conf中的任何配置，需要关闭redis-server进程后，再./redis-server redis.conf 重新开启redis后台服务。
+
+
+./redis-cli 开启redis客户端，你可以在其中输入任意redis命令。*注意，如果你在redis.conf配置文件中设置了requirepass 密码，那么登录客户端后，输入auth 密码 才可以继续操作
+
+
+#redis-cli接收参数,不填写参数默认连接127.0.0.1:6379
+./redis-cli -h <host> -p <port>
+
+
+ php-7.0.4安装redis扩展 
+
+1、在 /usr/local/src目录下 下载：wget -c https://github.com/phpredis/phpredis/archive/php7.zip
+
+2、解压：unzip php7.zip
+
+3、进入目录：cd phpredis-php7
+
+4、/usr/local/php/bin/phpize #用phpize生成configure配置文件 若这一步报错：Cannot find config.m4. 
+Make sure that you run '/usr/local/php/bin/phpize' in the top level source directory of the module
+
+解决方法如下：到php的安装目录下如：cd /usr/local/php/php-7.0.4/ext/openssl 执行命令：  cp ./config0.m4 ./config.m4 即可解决
+
+5、./configure --with-php-config=/usr/local/php/bin/php-config  #配置
+
+6、make  #编译
+make install  #安装
+
+上面的操作完成后，会在/usr/local/php/lib/php/extensions/no-debug-non-zts-20090626目录下生成出一个redis.so文件，下面我们需要把这个so文件加到php.ini中
+
+vi /usr/local/php/etc/php.ini
+
+具体设置如下：
+
+extension_dir="/usr/local/php/lib/php/extensions/no-debug-non-zts-20090626/"
+
+extension=redis.so
+
+7、重启验证
+
+资料
+http://www.cnblogs.com/GaZeon/p/5422078.html
+http://blog.csdn.net/c571121319/article/details/50931309
+http://www.tuicool.com/articles/q6v67rq
