@@ -147,3 +147,8 @@ service nginx restart   如果有语法错误会起不来
 
 更改权限
 chown www. crm/ -R
+
+
+
+
+
